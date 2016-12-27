@@ -83,7 +83,6 @@ class App extends Component {
     var self = this;
     const path = item.fullPath.substr(1);
     const filename = this.state.path ? this.state.path + '/' + path : path;
-    this.setState({ uploads: this.state.uploads.concat({ value: 0, file: filename }) });
     axios.post('file', file, {
       headers: {
         'Filename': filename,
@@ -97,11 +96,11 @@ class App extends Component {
     })
     .then(res => {
       this.fetchData();
-      // Remove uploads that have reached 100%
-      this.setState({ uploads: this.state.uploads.filter((i, _) => i.value !== 100) });
+      this.setState({ uploads: this.state.uploads.filter((i, _) => i.file !== filename) });
     })
     .catch(err => {
       this.setState({ error: 'Failed to upload file: ' + err });
+      this.setState({ uploads: this.state.uploads.filter((i, _) => i.file !== filename) });
     });
   }
 
@@ -110,9 +109,11 @@ class App extends Component {
     for (var i in uploads) {
       if (uploads[i].file == file) {
         uploads[i].value = value;
-        break;
+        return uploads;
       }
     }
+    // Since we reached here it was not found so add it
+    uploads.push({ value: 0, file: file });
     return uploads;
   }
 
