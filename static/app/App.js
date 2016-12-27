@@ -4,6 +4,7 @@ import axios from 'axios';
 import SearchForm from './SearchForm';
 import FileList from './FileList';
 import Breadcrumbs from './Breadcrumbs';
+import Progress from './Progress';
 
 function ErrorBox(props) {
   if (!props.error) {
@@ -31,12 +32,14 @@ class App extends Component {
     this.deleteFolder = this.deleteFolder.bind(this);
     this.removeError = this.removeError.bind(this);
     this.scanFiles = this.scanFiles.bind(this);
+    this.updateUploads = this.updateUploads.bind(this);
     this.state = {
       folders: [],
       files: [],
       root: '',
       error: '',
       path: this.props.path,
+      uploads: []
     };
   }
 
@@ -77,20 +80,40 @@ class App extends Component {
   }
 
   upload(item, file) {
+    var self = this;
     const path = item.fullPath.substr(1);
     const filename = this.state.path ? this.state.path + '/' + path : path;
+    this.setState({ uploads: this.state.uploads.concat({ value: 0, file: filename }) });
     axios.post('file', file, {
       headers: {
         'Filename': filename,
         'Content-Type': 'application/octet-stream'
+
+      },
+      onUploadProgress: (event) => {
+        const progress = Math.round(event.loaded / event.total * 100);
+        this.setState({ uploads: this.updateUploads(filename, progress) });
       }
     })
     .then(res => {
       this.fetchData();
+      // Remove uploads that have reached 100%
+      this.setState({ uploads: this.state.uploads.filter((i, _) => i.value !== 100) });
     })
     .catch(err => {
-      this.setState({ error: 'Failed to upload file: ' + err});
+      this.setState({ error: 'Failed to upload file: ' + err });
     });
+  }
+
+  updateUploads(file, value) {
+    var uploads = this.state.uploads;
+    for (var i in uploads) {
+      if (uploads[i].file == file) {
+        uploads[i].value = value;
+        break;
+      }
+    }
+    return uploads;
   }
 
   scanFiles(item, file) {
@@ -183,11 +206,20 @@ class App extends Component {
   }
 
   render() {
+    var uploads = [];
+    this.state.uploads.forEach(upload => {
+      uploads.push(<Progress
+        value={upload.value}
+        file={upload.file}
+        key={upload.file} />
+      );
+    });
     return (
       <div>
         <SearchForm
           addFolder={this.addFolder}
         />
+        {uploads}
         <ErrorBox
           error={this.state.error}
           clicked={this.removeError}
