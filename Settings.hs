@@ -52,10 +52,12 @@ data AppSettings = AppSettings
     , appAnalytics              :: Maybe Text
     -- ^ Google Analytics code
 
-    , appFolder                 :: String
-    -- ^ Folder where files are stored
     , appPassword               :: Text
     -- ^ Folder where files are stored
+    , appNoAuth                 :: Bool
+    -- ^ Disable authentication in tests
+    , appSizeLimit              :: Word64
+    -- ^ Maximum file size in MB
     }
 
 instance FromJSON AppSettings where
@@ -81,8 +83,9 @@ instance FromJSON AppSettings where
         appCopyright              <- o .: "copyright"
         appAnalytics              <- o .:? "analytics"
 
-        appFolder                 <- o .: "folder"
         appPassword               <- o .: "password"
+        appNoAuth                 <- o .:? "no-auth" .!= False
+        appSizeLimit              <- o .: "size-limit"
 
         return AppSettings {..}
 

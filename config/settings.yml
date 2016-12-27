@@ -23,5 +23,6 @@ ip-from-header: "_env:IP_FROM_HEADER:false"
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE
 
-folder: ""
-password: ""
+password: "password"
+size-limit: 100
+folder: "files"

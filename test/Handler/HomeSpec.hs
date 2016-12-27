@@ -2,22 +2,42 @@ module Handler.HomeSpec (spec) where
 
 import TestImport
 
+import System.Directory
+
+assertExists :: Bool -> String -> YesodExample App ()
+assertExists cond dir = do
+  exists <- liftIO $ doesDirectoryExist $ root </> dir
+  assertEq "Does directory exist" cond exists
+
 spec :: Spec
 spec = withApp $ do
 
-    describe "Homepage" $ do
-      it "loads the index and checks it looks right" $ do
-          get HomeR
-          statusIs 200
-          htmlAnyContain "h1" "a modern framework for blazing fast websites"
+  describe "Homepage" $ do
+    it "Check that the front page handler works" $ do
 
-          request $ do
-              setMethod "POST"
-              setUrl HomeR
-              addToken
-              fileByLabel "Choose a file" "test/Spec.hs" "text/plain" -- talk about self-reference
-              byLabel "What's on the file?" "Some Content"
+      get HomeR
+      statusIs 200
 
-          -- more debugging printBody
-          htmlAllContain ".upload-response" "text/plain"
-          htmlAllContain ".upload-response" "Some Content"
+  describe "Add folder and remove folder" $ do
+    it "Check that adding and deleting folders work" $ do
+
+      assertExists False "test"
+
+      postBody FolderR $ encode $ object
+        [ "path" .= ("" :: String)
+        , "name" .= ("test" :: String)]
+
+      statusIs 201
+      assertExists True "test"
+
+      request $ do
+        setMethod "DELETE"
+        setUrl FolderR
+        setRequestBody $ encode $ object
+          [ "path" .= ("test" :: String)
+          , "name" .= ("test" :: String)
+          , "time" .= ("" :: String)]
+
+      statusIs 200
+      bodyEquals "DELETED"
+      assertExists False "test"

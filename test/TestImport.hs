@@ -13,6 +13,7 @@ import Foundation            as X
 import Test.Hspec            as X
 import Yesod.Default.Config2 (useEnv, loadYamlSettings)
 import Yesod.Test            as X
+import Data.Aeson            as X
 
 withApp :: SpecWith (TestApp App) -> Spec
 withApp = before $ do

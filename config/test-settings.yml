@@ -1,1 +1,2 @@
-{}
+# Disable authentication in tests
+no-auth: true

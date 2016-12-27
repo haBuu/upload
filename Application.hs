@@ -51,7 +51,7 @@ makeFoundation appSettings = do
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
 
-    appFiles <- staticDevel $ fromString $ appFolder appSettings
+    appFiles <- staticDevel $ fromString root
 
     -- Return the foundation
     return App {..}

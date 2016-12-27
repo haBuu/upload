@@ -9,6 +9,9 @@ import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 
+root :: String
+root = "files"
+
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
 -- starts running, such as database connections. Every handler will have
@@ -116,7 +119,7 @@ instance Yesod App where
 
     makeLogger = return . appLogger
 
-    maximumContentLength _ (Just FileR) = Just $ 100 * 1024 * 1024 -- 100 megabytes
+    maximumContentLength app (Just FileR) = Just $ appSizeLimit (appSettings app) * 1024 * 1024
     maximumContentLength _ _ = Just $ 2 * 1024 * 1024 -- 2 megabytes
 
 -- This instance is required to use forms. You can modify renderMessage to
@@ -135,7 +138,9 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 
 -- Authentication helpers
 maybeAuth :: Handler (Maybe Text)
-maybeAuth = lookupSession "_AUTH"
+maybeAuth = do
+  noAuth <- fmap (appNoAuth . appSettings) getYesod
+  if noAuth then return $ Just "_AUTH" else lookupSession "_AUTH"
 
 loginUser :: Text -> Handler ()
 loginUser pw = do

@@ -33,9 +33,8 @@ postLoginR = do
 getFileR :: Handler Value
 getFileR = do
   mpath <- lookupGetParam "path"
-  base <- fmap root getYesod
   let path = unpack $ fromMaybe "" mpath
-  let wd = base </> path
+  let wd = root </> path
   contents <- liftIO $ listDirectory wd
   folderNames <- filterM (isDir . combine wd) contents
   fileNames <- filterM (isFile . combine wd) contents
@@ -43,7 +42,7 @@ getFileR = do
   files <- liftIO $ forM fileNames $ mkFile render wd path
   folders <- liftIO $ forM folderNames $ mkFolder wd path
   returnJson $ object
-    [ "root" .= base
+    [ "root" .= root
     , "folders" .= folders
     , "files" .= files
     ]
@@ -54,9 +53,8 @@ postFileR = do
   case mfile of
     Nothing -> invalidArgs []
     Just nameBS -> do
-      base <- fmap root getYesod
       let name = B8.unpack nameBS
-      let fullPath = base </> name
+      let fullPath = root </> name
       bs <- fmap B.concat $ rawRequestBody $$ CL.consume
       -- TODO: check that the file was written successfully
       liftIO $ B.writeFile fullPath bs
@@ -69,29 +67,23 @@ deleteFileR :: Handler Value
 deleteFileR = do
   file <- requireJsonBody :: Handler File
   -- TODO: check that the file was really deleted and handle exceptions gracefully
-  base <- fmap root getYesod
-  delFile $ base </> unpack (filePath file)
+  delFile $ root </> unpack (filePath file)
   sendResponseStatus status200 ("DELETED" :: Text)
 
 postFolderR :: Handler Value
 postFolderR = do
   (Folder path name _) <- requireJsonBody
-  base <- fmap root getYesod
   -- TODO: check that the folder was really created and handle exceptions gracefully
-  mkDir $ base </> unpack path </> unpack name
-  folder <- liftIO $ mkFolder (base </> unpack path) (unpack path) (unpack name)
+  mkDir $ root </> unpack path </> unpack name
+  folder <- liftIO $ mkFolder (root </> unpack path) (unpack path) (unpack name)
   sendResponseStatus status201 $ toJSON folder
 
 deleteFolderR :: Handler Value
 deleteFolderR = do
   folder <- requireJsonBody :: Handler Folder
-  base <- fmap root getYesod
   -- TODO: check that the folder was really deleted and handle exceptions gracefully
-  delDir $ base </> unpack (folderPath folder)
+  delDir $ root </> unpack (folderPath folder)
   sendResponseStatus status200 ("DELETED" :: Text)
-
-root :: App -> String
-root = appFolder . appSettings
 
 data Folder = Folder
   { folderName :: String
