@@ -18,4 +18,5 @@ cabal.sandbox.config
 *.keter
 files/
 static/node_modules
+static/builds
 *~
