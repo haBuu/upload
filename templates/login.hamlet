@@ -1,0 +1,5 @@
+<div .row .v-center>
+  <div .col-md-2 .offset-xs-5>
+    <form method=post action=@{LoginR}>
+      <input type=password name=password .form-control placeholder=Password>
+      <input type=submit .btn .btn-secondary .btn-block .mt-1 value=Login>

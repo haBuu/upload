@@ -1,0 +1,12 @@
+/static StaticR Static appStatic
+/files FilesR Static appFiles
+
+/favicon.ico FaviconR GET
+/robots.txt RobotsR GET
+
+/ HomeR GET
+
+/login LoginR GET POST
+
+/file FileR GET POST DELETE
+/folder FolderR POST DELETE
