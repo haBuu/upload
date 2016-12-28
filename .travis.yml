@@ -29,5 +29,5 @@ install:
 
 script:
 # Build the package, its tests, and its docs and run the tests
-- build.sh
+- bash ./build.sh
 - stack --no-terminal test --haddock --no-haddock-deps
