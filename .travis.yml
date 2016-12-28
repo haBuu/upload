@@ -25,10 +25,9 @@ before_install:
 
 install:
 # Build dependencies
-- npm install
 - stack --no-terminal --install-ghc test --only-dependencies
 
 script:
 # Build the package, its tests, and its docs and run the tests
-- webpack
+- build.sh
 - stack --no-terminal test --haddock --no-haddock-deps
