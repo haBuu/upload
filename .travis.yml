@@ -3,11 +3,23 @@
 sudo: false
 
 # Do not choose a language; we provide our own build tools.
-language: generic
+language: node_js
+
+node_js:
+  - "node"
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 # Caching so the next build will be fast too.
 cache:
   directories:
+  - $HOME/.npm
   - $HOME/.stack
 
 # Ensure necessary system libraries are present
@@ -28,4 +40,5 @@ install:
 
 script:
 # Build the package, its tests, and its docs and run the tests
-- stack --no-terminal test --haddock --no-haddock-deps
+- bash ./build.sh
+- stack --no-terminal test
