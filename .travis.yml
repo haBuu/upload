@@ -6,7 +6,7 @@ sudo: false
 language: generic node_js
 
 node_js:
-  - "node"
+  - "6"
 
 # Caching so the next build will be fast too.
 cache:
