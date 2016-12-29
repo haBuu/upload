@@ -19,8 +19,12 @@ addons:
 # Caching so the next build will be fast too.
 cache:
   directories:
-  - $HOME/.npm
+  - static/node_modules
   - $HOME/.stack
+
+cache:
+  directories:
+    - node_modules
 
 # Ensure necessary system libraries are present
 addons:
