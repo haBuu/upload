@@ -25,3 +25,4 @@ copyright: Insert copyright statement here
 
 password: "password"
 size-limit: 100
+store: "files"
