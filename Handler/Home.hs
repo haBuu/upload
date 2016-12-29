@@ -22,7 +22,11 @@ getHomeR = do
         $(widgetFile "homepage")
 
 getLoginR :: Handler Html
-getLoginR = defaultLayout $(widgetFile "login")
+getLoginR = do
+  mAuth <- maybeAuth
+  case mAuth of
+    Just _ -> redirect HomeR
+    Nothing -> defaultLayout $(widgetFile "login")
 
 postLoginR :: Handler Html
 postLoginR = do
