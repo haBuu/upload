@@ -22,10 +22,6 @@ cache:
   - static/node_modules
   - $HOME/.stack
 
-cache:
-  directories:
-    - node_modules
-
 # Ensure necessary system libraries are present
 addons:
   apt:
