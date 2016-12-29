@@ -85,6 +85,7 @@ library
                  , case-insensitive
                  , wai
                  , filepath
+                 , foreign-store
 
 executable         upload
     if flag(library-only)
