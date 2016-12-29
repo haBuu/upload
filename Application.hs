@@ -54,9 +54,9 @@ makeFoundation appSettings = do
         (appStaticDir appSettings)
 
     -- Create the root folder if it does not exist
-    createDirectoryIfMissing True root
-
-    appFiles <- staticDevel $ fromString root
+    let store = appStore appSettings
+    createDirectoryIfMissing True store
+    appFiles <- staticDevel $ fromString store
 
     -- Return the foundation
     return App {..}

@@ -32,6 +32,7 @@ postLoginR = do
 
 getFileR :: Handler Value
 getFileR = do
+  root <- getRoot
   mpath <- lookupGetParam "path"
   let path = unpack $ fromMaybe "" mpath
   let wd = root </> path
@@ -42,13 +43,14 @@ getFileR = do
   files <- liftIO $ forM fileNames $ mkFile render wd path
   folders <- liftIO $ forM folderNames $ mkFolder wd path
   returnJson $ object
-    [ "root" .= root
+    [ "root" .= ("files" :: Text)
     , "folders" .= folders
     , "files" .= files
     ]
 
 postFileR :: Handler Value
 postFileR = do
+  root <- getRoot
   mfile <- lookupHeader "Filename"
   case mfile of
     Nothing -> invalidArgs []
@@ -65,6 +67,7 @@ postFileR = do
 
 deleteFileR :: Handler Value
 deleteFileR = do
+  root <- getRoot
   file <- requireJsonBody :: Handler File
   -- TODO: check that the file was really deleted and handle exceptions gracefully
   delFile $ root </> unpack (filePath file)
@@ -72,6 +75,7 @@ deleteFileR = do
 
 postFolderR :: Handler Value
 postFolderR = do
+  root <- getRoot
   (Folder path name _) <- requireJsonBody
   -- TODO: check that the folder was really created and handle exceptions gracefully
   mkDir $ root </> unpack path </> unpack name
@@ -80,10 +84,14 @@ postFolderR = do
 
 deleteFolderR :: Handler Value
 deleteFolderR = do
+  root <- getRoot
   folder <- requireJsonBody :: Handler Folder
   -- TODO: check that the folder was really deleted and handle exceptions gracefully
   delDir $ root </> unpack (folderPath folder)
   sendResponseStatus status200 ("DELETED" :: Text)
+
+getRoot :: Handler String
+getRoot = fmap (appStore . appSettings) getYesod
 
 data Folder = Folder
   { folderName :: String

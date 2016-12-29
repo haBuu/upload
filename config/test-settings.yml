@@ -1,2 +1,3 @@
 # Disable authentication in tests
 no-auth: true
+store: "files-test"

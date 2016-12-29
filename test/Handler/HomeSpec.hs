@@ -4,27 +4,44 @@ import TestImport
 
 import System.Directory
 
+import Settings
+
 assertDirExists :: Bool -> String -> YesodExample App ()
 assertDirExists cond dir = do
+  root <- getRoot
   exists <- liftIO $ doesDirectoryExist $ root </> dir
   assertEq "Does directory exist" cond exists
 
 assertFileExists :: Bool -> String -> YesodExample App ()
 assertFileExists cond file = do
+  root <- getRoot
   exists <- liftIO $ doesFileExist $ root </> file
   assertEq "Does file exist" cond exists
+
+getRoot :: YesodExample App String
+getRoot = fmap (appStore . appSettings) getTestYesod
 
 spec :: Spec
 spec = withApp $ do
 
-  describe "Homepage" $ do
+  describe "Home" $ do
     it "Check that the front page handler works" $ do
 
       get HomeR
       statusIs 200
 
+  describe "File" $ do
+    it "Check that the file handler works" $ do
+
+      get FileR
+      statusIs 200
+
   describe "Add folder and delete folder" $ do
     it "Check that adding and deleting folders work" $ do
+
+      get FileR
+      statusIs 200
+      bodyNotContains "test"
 
       assertDirExists False "test"
 
@@ -35,6 +52,10 @@ spec = withApp $ do
 
       statusIs 201
       assertDirExists True "test"
+
+      get FileR
+      statusIs 200
+      bodyContains "test"
 
       request $ do
         setMethod "DELETE"
@@ -49,8 +70,16 @@ spec = withApp $ do
       bodyEquals "DELETED"
       assertDirExists False "test"
 
+      get FileR
+      statusIs 200
+      bodyNotContains "test"
+
   describe "Add and delete file" $ do
     it "Check that adding and deleting files work" $ do
+
+      get FileR
+      statusIs 200
+      bodyNotContains "test"
 
       assertFileExists False "test"
 
@@ -62,6 +91,10 @@ spec = withApp $ do
 
       statusIs 201
       assertFileExists True "test"
+
+      get FileR
+      statusIs 200
+      bodyContains "test"
 
       request $ do
         setMethod "DELETE"
@@ -77,6 +110,10 @@ spec = withApp $ do
       statusIs 200
       assertFileExists False "test"
 
+      get FileR
+      statusIs 200
+      bodyNotContains "test"
+
       -- Now without header
       request $ do
         setMethod "POST"
@@ -85,3 +122,7 @@ spec = withApp $ do
 
       statusIs 400
       assertFileExists False "test"
+
+      get FileR
+      statusIs 200
+      bodyNotContains "test"

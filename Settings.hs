@@ -58,6 +58,8 @@ data AppSettings = AppSettings
     -- ^ Disable authentication in tests
     , appSizeLimit              :: Word64
     -- ^ Maximum file size in MB
+    , appStore                  :: String
+    -- ^ Folder where the files are stored
     }
 
 instance FromJSON AppSettings where
@@ -86,6 +88,7 @@ instance FromJSON AppSettings where
         appPassword               <- o .: "password"
         appNoAuth                 <- o .:? "no-auth" .!= False
         appSizeLimit              <- o .: "size-limit"
+        appStore                  <- o .: "store"
 
         return AppSettings {..}
 
