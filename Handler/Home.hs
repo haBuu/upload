@@ -18,7 +18,7 @@ getHomeR = do
     Nothing -> redirect LoginR
     Just _ -> do
       defaultLayout $ do
-        addScript $ StaticR builds_bundle_js
+        addScript $ StaticR js_app_js
         $(widgetFile "homepage")
 
 getLoginR :: Handler Html

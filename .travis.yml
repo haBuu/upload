@@ -24,7 +24,7 @@ notifications:
 # Caching so the next build will be fast too.
 cache:
   directories:
-  - static/node_modules
+  - front/node_modules
   - $HOME/.stack
 
 # Ensure necessary system libraries are present

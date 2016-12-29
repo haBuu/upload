@@ -18,6 +18,6 @@ cabal.sandbox.config
 *.keter
 files/
 files-test/
-static/node_modules
-static/builds
+front/node_modules
+static/js/app.js
 *~

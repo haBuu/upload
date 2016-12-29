@@ -3,8 +3,8 @@ module.exports = {
         home: './app/index.js'
     },
     output: {
-        path: 'builds',
-        filename: "bundle.js"
+        path: '../static/js',
+        filename: "app.js"
     },
     module: {
         loaders: [
