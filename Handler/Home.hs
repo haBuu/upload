@@ -10,6 +10,7 @@ import qualified Data.ByteString.Char8 as B8
 import Data.Time
 import qualified Data.Text as T
 import Data.Aeson ((.:?))
+import Shelly (shelly, bash, silently)
 
 getHomeR :: Handler Html
 getHomeR = do
@@ -20,6 +21,16 @@ getHomeR = do
       defaultLayout $ do
         addScript $ StaticR js_app_js
         $(widgetFile "homepage")
+
+getFindR :: Handler Value
+getFindR = do
+  root <- fmap pack getRoot
+  mfind <- lookupGetParam "find"
+  let find = fromMaybe "" mfind
+  results <- liftIO $ shelly $ silently $
+     bash "find" [root, "-iname", "\"*" <> find <> "*\"", "-type", "f"]
+  let cleaned = map (stripPrefix $ root <> "/") $ lines results
+  returnJson $ object ["results" .= cleaned]
 
 getLoginR :: Handler Html
 getLoginR = do

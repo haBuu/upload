@@ -86,6 +86,7 @@ library
                  , wai
                  , filepath
                  , foreign-store
+                 , shelly
 
 executable         upload
     if flag(library-only)

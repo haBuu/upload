@@ -33,6 +33,7 @@ class App extends Component {
     this.removeError = this.removeError.bind(this);
     this.scanFiles = this.scanFiles.bind(this);
     this.updateUploads = this.updateUploads.bind(this);
+    this.setError = this.setError.bind(this);
     this.state = {
       folders: [],
       files: [],
@@ -99,7 +100,7 @@ class App extends Component {
       this.setState({ uploads: this.state.uploads.filter((i, _) => i.file !== filename) });
     })
     .catch(err => {
-      this.setState({ error: 'Failed to upload file: ' + err });
+      this.setError('Failed to upload file: ' + err);
       this.setState({ uploads: this.state.uploads.filter((i, _) => i.file !== filename) });
     });
   }
@@ -149,7 +150,7 @@ class App extends Component {
       });
     })
     .catch(err => {
-      this.setState({ error: 'Failed to delete file: ' + err});
+      this.setError('Failed to delete file: ' + err);
     });
   }
 
@@ -164,7 +165,7 @@ class App extends Component {
       });
     })
     .catch(err => {
-      this.setState({ error: 'Failed to delete folder: ' + err});
+      this.setError('Failed to delete folder: ' + err);
     });
   }
 
@@ -177,7 +178,7 @@ class App extends Component {
       this.fetchData();
     })
     .catch(err => {
-      this.setState({ error: 'Failed to add folder: ' + err});
+      this.setError('Failed to add folder: ' + err);
     });
   }
 
@@ -191,7 +192,7 @@ class App extends Component {
         });
       })
       .catch(err => {
-        this.setState({ error: 'Failed to fetch data: ' + err});
+        this.setError('Failed to fetch data: ' + err);
       });
   }
 
@@ -200,6 +201,10 @@ class App extends Component {
     this.setState({ path: path }, function() {
       this.fetchData();
     });
+  }
+
+  setError(err) {
+    this.setState({ error: err });
   }
 
   removeError() {
@@ -219,6 +224,9 @@ class App extends Component {
       <div>
         <SearchForm
           addFolder={this.addFolder}
+          setError={this.setError}
+          api={this.api}
+          root={this.state.root}
         />
         {uploads}
         <ErrorBox

@@ -126,3 +126,30 @@ spec = withApp $ do
       get FileR
       statusIs 200
       bodyNotContains "test"
+
+  describe "Search" $ do
+    it "Check that searching works" $ do
+
+      assertFileExists False "test"
+
+      request $ do
+        setMethod "GET"
+        setUrl FindR
+        addGetParam "find" ""
+
+      statusIs 200
+      bodyNotContains "test"
+
+      root <- getRoot
+      liftIO $ writeFile (root </> "test") ("testing" :: Text)
+      assertFileExists True "test"
+
+      request $ do
+        setMethod "GET"
+        setUrl FindR
+        addGetParam "find" "test"
+
+      statusIs 200
+      bodyContains "test"
+
+      liftIO $ removeFile (root </> "test")
