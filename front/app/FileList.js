@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
 function File(props) {
+  const link = props.api + props.root + '/' + props.file.path;
   return (
     <tr>
       <td>
         <a id={props.file.name} className="deco-none"
           target="_blank"
-          href={props.api + props.root + '/' + props.file.path}>
+          href={link}>
           <img className="file-icon"
             src={props.file.icon}
             alt={props.file.alt}
@@ -27,13 +28,13 @@ function File(props) {
       </td>
       <td>
         <div className="btn-group" role="group">
-          <button className="btn btn-secondary btn-sm" data-clipboard-text={props.api + props.root + '/' + props.file.path}
+          <button className="btn btn-secondary btn-sm" data-clipboard-text={link}
             type="button">
             Copy link
           </button>
-          <a className="disabled btn btn-secondary btn-sm"
+          <a className="btn btn-secondary btn-sm"
             download={props.file.name}
-            href={props.file.path}
+            href={link}
             type="button">
             Download
           </a>
@@ -49,13 +50,14 @@ function File(props) {
 }
 
 function Folder(props) {
+  const link = 'folder/?path=' + props.folder.path;
   return (
     <tr>
       <td>
-        <a className="deco-none" href={props.folder.path}
+        <a className="deco-none folder-link"
           onClick={props.navigate.bind(this, props.folder.path)}>
           <img className="file-icon"
-            src="http://localhost:3000/static/img/folder.png"
+            src={props.api + '/static/img/folder.png'}
             alt="Folder"
             title="Folder"
           />
@@ -74,9 +76,13 @@ function Folder(props) {
       </td>
       <td>
         <div className="btn-group" role="group">
-          <a className="disabled btn btn-secondary btn-sm"
+          <button className="btn btn-secondary btn-sm" data-clipboard-text={props.api + link}
+            type="button">
+            Copy link
+          </button>
+          <a className="btn btn-secondary btn-sm"
             download={props.folder.name}
-            href={props.folder.path}
+            href={link}
             type="button">
             Download
           </a>

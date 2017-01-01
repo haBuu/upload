@@ -9,5 +9,5 @@
 /login LoginR GET POST
 
 /file FileR GET POST DELETE
-/folder FolderR POST DELETE
+/folder FolderR GET POST DELETE
 /find FindR GET

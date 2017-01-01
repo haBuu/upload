@@ -17,3 +17,7 @@ body
 a.deco-none
   color: inherit
   text-decoration: none
+  cursor: pointer
+
+a.folder-link
+  cursor: pointer

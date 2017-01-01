@@ -81,6 +81,10 @@ instance Yesod App where
     isAuthorized HomeR _ = return Authorized
     isAuthorized LoginR _ = return Authorized
 
+    -- Allow downloading folders wihout authentication
+    -- Same as FilesR but for zipped folders
+    isAuthorized FolderR False = return Authorized
+
     -- Protect the API
     isAuthorized _ _ = do
       mAuth <- maybeAuth

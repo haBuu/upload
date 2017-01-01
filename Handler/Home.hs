@@ -10,7 +10,7 @@ import qualified Data.ByteString.Char8 as B8
 import Data.Time
 import qualified Data.Text as T
 import Data.Aeson ((.:?))
-import Shelly (shelly, bash, silently)
+import Shelly (shelly, bash, bash_, silently)
 
 getHomeR :: Handler Html
 getHomeR = do
@@ -88,10 +88,27 @@ deleteFileR = do
   delFile $ root </> unpack (filePath file)
   sendResponseStatus status200 ("DELETED" :: Text)
 
+getFolderR :: Handler ()
+getFolderR = do
+  root <- getRoot
+  mpath <- lookupGetParam "path"
+  case mpath of
+    Nothing -> invalidArgs []
+    Just path -> do
+      let folder = root </> unpack path
+      -- Create name for the zip file
+      tmp <- liftIO $ do
+        tz <- getCurrentTimeZone
+        time <- getCurrentTime
+        return $ "/tmp/folder-" ++ timeStamp tz time ++ ".zip"
+      -- Create the zip file
+      liftIO $ shelly $ silently $ bash_ "zip" ["-r", pack tmp, pack folder]
+      sendFile "application/zip" tmp
+
 postFolderR :: Handler Value
 postFolderR = do
   root <- getRoot
-  (Folder path name _) <- requireJsonBody
+  (Folder name path _) <- requireJsonBody
   -- TODO: check that the folder was really created and handle exceptions gracefully
   mkDir $ root </> unpack path </> unpack name
   folder <- liftIO $ mkFolder (root </> unpack path) (unpack path) (unpack name)
@@ -173,6 +190,13 @@ showTime tz time =
   where
     local = utcToLocalTime tz time
     str = "%e.%m.%Y %R"
+
+timeStamp :: TimeZone -> UTCTime -> String
+timeStamp tz time =
+  formatTime defaultTimeLocale str local
+  where
+    local = utcToLocalTime tz time
+    str = "%Y%m%d%H%M%S%q"
 
 delDir :: FilePath -> Handler ()
 delDir = liftIO . removeDirectoryRecursive
