@@ -32,6 +32,7 @@ class SearchForm extends Component {
 
   handleClick(event) {
     this.props.addFolder(this.state.value);
+    this.setState({ value: '' });
   }
 
   search(str) {
