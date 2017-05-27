@@ -67,7 +67,7 @@ instance Yesod App where
       master <- getYesod
 
       pc <- widgetToPageContent $ do
-        addStylesheetRemote "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css"
+        addStylesheetRemote "//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
         addScriptRemote "//cdn.rawgit.com/zenorocha/clipboard.js/v1.5.16/dist/clipboard.min.js"
         $(widgetFile "default-layout")
         $(widgetFile "style")
