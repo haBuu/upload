@@ -105,6 +105,7 @@ spec = withApp $ do
           , "icon" .= ("" :: String)
           , "alt" .= ("" :: String)
           , "time" .= ("" :: String)
+          , "public" .= (True :: Bool)
           ]
 
       statusIs 200
