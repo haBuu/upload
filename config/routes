@@ -8,6 +8,6 @@
 
 /login LoginR GET POST
 
-/file FileR GET POST DELETE
+/file FileR GET POST PUT DELETE
 /folder FolderR GET POST DELETE
 /find FindR GET

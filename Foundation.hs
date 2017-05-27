@@ -77,7 +77,7 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
-    isAuthorized (FilesR _) _ = return Authorized
+    isAuthorized (FilesR path) _ = filePermission path
     isAuthorized HomeR _ = return Authorized
     isAuthorized LoginR _ = return Authorized
 
@@ -86,11 +86,7 @@ instance Yesod App where
     isAuthorized FolderR False = return Authorized
 
     -- Protect the API
-    isAuthorized _ _ = do
-      mAuth <- maybeAuth
-      return $ case mAuth of
-        Nothing -> Unauthorized ""
-        Just _ -> Authorized
+    isAuthorized _ _ = isAuth
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -147,3 +143,40 @@ loginUser :: Text -> Handler ()
 loginUser pw = do
   password <- fmap (appPassword . appSettings) getYesod
   when (pw == password) $ setSession "_AUTH" pw
+
+filePermission :: Route Static -> Handler AuthResult
+filePermission route = do
+  let (parts, _) = renderRoute route
+  public <- liftIO $ isPublic $ intercalate "/" parts
+  if public then return Authorized else isAuth
+
+getPublicFiles :: IO [Text]
+getPublicFiles = fmap lines $ readFile "public.txt"
+
+isPublic :: Text -> IO Bool
+isPublic path = do
+  files <- getPublicFiles
+  return $ elem path files
+
+setPublic :: Text -> IO ()
+setPublic path = do
+  files <- getPublicFiles
+  if elem path files
+    then return ()
+    else writeFile "public.txt" $ unlines $ path:files
+
+setPrivate :: Text -> IO ()
+setPrivate path = do
+  files <- getPublicFiles
+  print files
+  print path
+  if elem path files
+    then writeFile "public.txt" $ unlines $ filter ((/=) path) files
+    else return ()
+
+isAuth :: Handler AuthResult
+isAuth = do
+  mAuth <- maybeAuth
+  return $ case mAuth of
+    Nothing -> Unauthorized ""
+    Just _ -> Authorized

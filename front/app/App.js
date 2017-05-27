@@ -34,6 +34,7 @@ class App extends Component {
     this.scanFiles = this.scanFiles.bind(this);
     this.updateUploads = this.updateUploads.bind(this);
     this.setError = this.setError.bind(this);
+    this.togglePermission = this.togglePermission.bind(this);
     this.state = {
       folders: [],
       files: [],
@@ -211,6 +212,16 @@ class App extends Component {
     this.setState({ error: '' });
   }
 
+  togglePermission(item) {
+    axios.put('file', item)
+      .then(res => {
+        this.fetchData();
+      })
+      .catch(err => {
+        this.setError('Failed to change permission: ' + err);
+      });
+  }
+
   render() {
     var uploads = [];
     this.state.uploads.forEach(upload => {
@@ -245,6 +256,7 @@ class App extends Component {
           folders={this.state.folders}
           files={this.state.files}
           root={this.state.root}
+          togglePermission={this.togglePermission}
         />
       </div>
     );

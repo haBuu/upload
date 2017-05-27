@@ -88,6 +88,14 @@ deleteFileR = do
   delFile $ root </> unpack (filePath file)
   sendResponseStatus status200 ("DELETED" :: Text)
 
+putFileR :: Handler Value
+putFileR = do
+  file <- requireJsonBody :: Handler File
+  if (public file)
+    then liftIO $ setPrivate $ pack $ filePath file
+    else liftIO $ setPublic $ pack $ filePath file
+  sendResponseStatus status200 ("UPDATED" :: Text)
+
 getFolderR :: Handler ()
 getFolderR = do
   root <- getRoot
@@ -137,6 +145,7 @@ data File = File
   , icon :: Text
   , alt :: Text
   , fileTime :: String
+  , public :: Bool
   } deriving (Show)
 
 instance ToJSON Folder where
@@ -154,12 +163,13 @@ instance FromJSON Folder where
   parseJSON _ = mzero
 
 instance ToJSON File where
-  toJSON (File name path icon alt time) = object
+  toJSON (File name path icon alt time public) = object
     [ "name" .= name
     , "path" .= path
     , "icon" .= icon
     , "alt" .= alt
     , "time" .= time
+    , "public" .= public
     ]
 
 instance FromJSON File where
@@ -169,14 +179,16 @@ instance FromJSON File where
     <*> o .: "icon"
     <*> o .: "alt"
     <*> o .: "time"
+    <*> o .: "public"
   parseJSON _ = mzero
 
 mkFile :: (Route App -> Text) -> String -> String -> String -> IO File
 mkFile render wd path name = do
   tz <- liftIO getCurrentTimeZone
   time <- liftIO $ getModificationTime $ wd </> name
+  public <- isPublic $ pack $ path </> name
   let (icon, alt) = fileIcon $ pack $ takeExtension name
-  return $ File name (path </> name) (render icon) alt $ showTime tz time
+  return $ File name (path </> name) (render icon) alt (showTime tz time) public
 
 mkFolder :: String -> String -> String -> IO Folder
 mkFolder wd path name = do

@@ -28,6 +28,9 @@ function File(props) {
       </td>
       <td>
         <div className="btn-group" role="group">
+          <PublicPrivateButton item={props.file} handleClick={props.handleClick}
+            public={false}
+          />
           <button className="btn btn-secondary btn-sm" data-clipboard-text={link}
             type="button">
             Copy link
@@ -97,7 +100,28 @@ function Folder(props) {
   );
 }
 
+function PublicPrivateButton(props) {
+  const isPublic = props.item.public;
+  var buttonType = isPublic ? "btn-success" : "btn-danger"
+  return (
+    <button className={"btn btn-sm " + buttonType}
+      type="button"
+      onClick={props.handleClick.bind(this, props.item)}>
+      {isPublic ? 'Public' : 'Private'}
+    </button>
+  );
+}
+
 class FileList extends Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(item, event) {
+    this.props.togglePermission(item);
+  }
+
   render() {
     var items = [];
     this.props.folders.forEach(folder => {
@@ -106,6 +130,7 @@ class FileList extends Component {
         navigate={this.props.navigate}
         deleteFolder={this.props.deleteFolder}
         folder={folder}
+        handleClick={this.handleClick}
         key={folder.name} />
       );
     });
@@ -115,6 +140,7 @@ class FileList extends Component {
         deleteFile={this.props.deleteFile}
         file={file}
         root={this.props.root}
+        handleClick={this.handleClick}
         key={file.name} />
       );
     });

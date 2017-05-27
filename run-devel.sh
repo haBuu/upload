@@ -13,7 +13,7 @@
 # name of the yesod app
 app="upload"
 # files to ignore
-ignore="\.git/*|dist/*|yesod-devel/*|front/*|.stack-work/*|static/tmp/*|$app.sqlite3|$app.cabal|stack.yaml|run-devel.sh|^.*\.(o|hi)|4913"
+ignore="\.git/*|dist/*|yesod-devel/*|front/*|files/*|.stack-work/*|static/tmp/*|$app.sqlite3|$app.cabal|stack.yaml|run-devel.sh|^.*\.(o|hi)|4913"
 
 function showHelp() {
   echo "Usage: $0 -w"
