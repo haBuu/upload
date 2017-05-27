@@ -58,15 +58,15 @@ class SearchForm extends Component {
     });
     return (
       <div>
-        <div className="input-group mt-1">
-          <input className="form-control form-control-sm"
+        <div className="input-group mt-2">
+          <input className="form-control"
             type="text"
             placeholder="Search or folder name"
             value={this.state.value}
             onChange={this.handleChange}
           />
           <span className="input-group-btn">
-            <button className="btn btn-secondary btn-sm"
+            <button className="btn btn-secondary"
               type="button"
               onClick={this.handleClick}>
               Create folder

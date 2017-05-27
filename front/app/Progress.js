@@ -7,12 +7,14 @@ class Progress extends Component {
 
   render() {
     return (
-      <div className="mt-1">
+      <div className="my-2">
         <p>{this.props.file} {'(' + this.props.value + '%)'}</p>
-        <progress className="progress-striped progress progress-success"
-          value={this.props.value} max="100">
-        </progress>
+        <div className="progress">
+          <div className="progress-bar progress-bar-striped bg-success" role="progressbar" style={{width: this.props.value + "%"}}></div>
+        </div>
       </div>
+
+
     );
   }
 }
